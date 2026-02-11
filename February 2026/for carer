@@ -1,0 +1,4 @@
+Component,Platform,Why it's best for you
+Database,Supabase or Aiven,Supabase offers a professional PostgreSQL DB that handles 50k rows easily. Aiven offers a free 5GB plan which is huge.
+Backend,Render or Koyeb,"Both allow you to deploy Spring Boot for free. Koyeb is faster for Java, while Render is very beginner-friendly."
+Frontend,Netlify or Vercel,"They provide a Permanent HTTPS Link (e.g., attendance-system.netlify.app) for free."
