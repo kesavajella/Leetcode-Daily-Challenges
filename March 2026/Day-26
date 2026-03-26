@@ -1,0 +1,42 @@
+//3548. Equal Sum Grid Partition II
+class Solution {
+    public boolean canPartitionGrid(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+
+        long total = 0;
+
+        HashMap<Long, Integer> bottom = new HashMap<>();
+        HashMap<Long, Integer> top = new HashMap<>();
+        HashMap<Long, Integer> left = new HashMap<>();
+        HashMap<Long, Integer> right = new HashMap<>();
+
+        // Initialize bottom and right maps
+        for (int[] row : grid) {
+            for (int x : row) {
+                total += x;
+                bottom.put((long)x, bottom.getOrDefault((long)x, 0) + 1);
+                right.put((long)x, right.getOrDefault((long)x, 0) + 1);
+            }
+        }
+
+        long sumTop = 0;
+
+        // Horizontal cuts
+        for (int i = 0; i < m - 1; i++) {
+            for (int j = 0; j < n; j++) {
+                int val = grid[i][j];
+                sumTop += val;
+
+                top.put((long)val, top.getOrDefault((long)val, 0) + 1);
+                bottom.put((long)val, bottom.get((long)val) - 1);
+            }
+
+            long sumBottom = total - sumTop;
+
+            if (sumTop == sumBottom) return true;
+
+            long diff = Math.abs(sumTop - sumBottom);
+
+            if (sumTop > sumBottom) {
+                if (check(top, grid, 0, i, 0, n - 1, diff)) return true;
+            } else {
