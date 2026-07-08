@@ -1,0 +1,89 @@
+//3756. Concatenate Non-Zero Digits and Multiply by Sum II
+class Solution {
+    private final int MOD = 1000000007;
+
+    public int[] sumAndMultiply(String s, int[][] queries) {
+        int n = s.length();
+        int q = queries.length;
+
+        long[] prefixSum = new long[n + 1];
+        long[] prefixNum = new long[n + 1];
+        int[] count = new int[n + 1];
+        
+        long[] powers = new long[n + 1];
+        powers[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            powers[i] = (powers[i - 1] * 10) % MOD;
+        }
+
+        char[] sCh = s.toCharArray();
+        long currentNum = 0;
+        int currentCount = 0;
+
+        for (int i = 0; i < n; i++) {
+            int x = sCh[i] - '0';
+            
+            prefixSum[i + 1] = prefixSum[i] + x;
+
+            // APPROACH: Number Construction (Skipping Zeros)
+            // We build a number 'currentNum' by concatenating ONLY non-zero digits.
+            // Example String s = "10203"
+            // i=0 ('1'): currentNum = 1,   currentCount = 1
+            // i=1 ('0'): currentNum = 1,   currentCount = 1 (Zero ignored)
+            // i=2 ('2'): currentNum = 12,  currentCount = 2
+            // i=3 ('0'): currentNum = 12,  currentCount = 2 (Zero ignored)
+            // i=4 ('3'): currentNum = 123, currentCount = 3
+            if (x > 0) {
+                currentNum = (currentNum * 10 + x) % MOD;
+                currentCount++;
+            }
+            
+            prefixNum[i + 1] = currentNum;
+            count[i + 1] = currentCount;
+        }
+
+        int[] result = new int[q];
+
+        for (int i = 0; i < q; i++) {
+            int l = queries[i][0];
+            int r = queries[i][1];
+
+            long sum = prefixSum[r + 1] - prefixSum[l];
+            
+            // LOGIC: Modular Number Extraction
+            // We want to extract the number formed by the substring from 'l' to 'r'.
+            //
+            // Mathematical Formula:
+            // ExtractedNum = (FullPrefixNum[right] - FullPrefixNum[left-1] * 10^(length_of_segment)) % MOD
+            //
+            // EXAMPLE WALKTHROUGH:
+            // Let s = "10203". We want range [2, 4] (substring "203").
+            //
+            // 1. Identify Prefix Values (1-based index mapping):
+            //    - prefixNum[r+1] (index 5) represents "123" -> Value: 123
+            //    - prefixNum[l]   (index 2) represents "1"   -> Value: 1
+            //
+            // 2. Determine Length of Non-Zero Segment:
+            //    - count[r+1] (at index 5) = 3 (digits '1', '2', '3')
+            //    - count[l]   (at index 2) = 1 (digit '1')
+            //    - len = 3 - 1 = 2
+            //
+            // 3. Apply Formula:
+            //    - We need to remove the prefix "1" from "123" to get "23".
+            //    - To shift "1" to the correct position to subtract it: 1 * 10^2 = 100.
+            //    - Result = 123 - 100 = 23.
+            //
+            // 4. Handling Negative Results with Modulo:
+            //    - Since (A - B) % MOD can be negative in Java, we add +MOD before taking final % MOD.
+            
+            int len = count[r + 1] - count[l];
+            
+            // Calculate: prefixNum[r+1] - (prefixNum[l] * 10^len)
+            long val = (prefixNum[r + 1] - (prefixNum[l] * powers[len]) % MOD + MOD) % MOD;
+
+            result[i] = (int) ((sum % MOD * val) % MOD);
+        }
+
+        return result;
+    }
+}
