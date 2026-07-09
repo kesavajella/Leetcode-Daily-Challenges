@@ -1,0 +1,17 @@
+//3532. Path Existence Queries in a Graph I
+class Solution {
+    public boolean[] pathExistenceQueries(int n, int[] nums, int maxDiff, int[][] queries) {
+        int[] dp = new int[n];
+        for (int i = 1; i < n; i++) {
+            if ((nums[i] - nums[i - 1]) <= maxDiff) dp[i] = 1 + dp[i - 1];
+        }
+        int m = queries.length;
+        boolean[] ans = new boolean[m];
+        for (int i = 0; i < m; i++) {
+            int mn = Math.min(queries[i][0], queries[i][1]);
+            int mx = Math.max(queries[i][0], queries[i][1]);
+            if ((dp[mx] - dp[mn]) == (mx - mn)) ans[i] = true;
+        }
+        return ans;
+    }
+}
