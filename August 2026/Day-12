@@ -1,0 +1,29 @@
+//2958. Length of Longest Subarray With at Most K Frequency
+class Solution {
+    public int maxSubarrayLength(int[] nums, int k) {
+        Map<Integer,Integer> map = new HashMap<>();
+
+        int start=0,end=0,result=0,count=0;
+
+        while(end<nums.length){
+
+            map.put(nums[end],map.getOrDefault(nums[end],0)+1);     // updating frequency;
+
+            if(map.get(nums[end])>k) {   // if frequency is greater than k
+
+                while(start<end && nums[start]!=nums[end]){ // till not found the same number traverse and make minus that frequency
+                    map.put(nums[start],map.get(nums[start++])-1);
+                    count--;
+                }
+                start++;
+                map.put(nums[end],map.get(nums[end])-1); // update current number frequency
+
+            }else{
+                result=Math.max(result,++count); // keep updating result
+            }
+            end++;
+        }
+
+        return result;
+    }
+}
