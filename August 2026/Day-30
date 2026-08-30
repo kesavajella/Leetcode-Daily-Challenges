@@ -1,0 +1,48 @@
+//2091. Removing Minimum and Maximum From Array
+class Solution {
+    public int minimumDeletions(int[] nums) {
+        int n = nums.length;
+        int min = Integer.MAX_VALUE , max = Integer.MIN_VALUE;
+        int minInd = 0 , maxInd = 0;
+        for(int i = 0 ; i<n ; i++){
+            int num = nums[i];
+            if(num < min){
+                 min = Math.min(num , min);
+                 minInd = i;
+            }
+            if(num>max){
+                max = Math.max(num , max);
+                maxInd = i;
+            }
+        }
+        
+        //min Deletions from front
+        int minDel = Integer.MAX_VALUE;
+        if(minInd > maxInd) {
+            minDel = Math.min(minDel , minInd+1);
+        }else{
+              minDel = Math.min(minDel , maxInd+1);
+        }
+
+        //min Deletions from back
+        if(maxInd < minInd) {
+              minDel = Math.min(minDel , n-maxInd);
+        }else{
+             minDel = Math.min(minDel , n-minInd);
+        }
+        
+        // first from front and then from back
+         if(minInd < maxInd){
+            int currDel = 0;
+            currDel += minInd+1;
+            currDel += n - maxInd;
+            minDel = Math.min(minDel , currDel);
+         }else{
+            int currDel = 0;
+            currDel += maxInd+1;
+            currDel += n - minInd;
+            minDel = Math.min(minDel , currDel);
+         }
+         return minDel;
+    }
+}
