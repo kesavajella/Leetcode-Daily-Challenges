@@ -1,0 +1,39 @@
+//2897. Apply Operations on Array to Maximize Sum of Squares
+import java.util.List;
+import java.util.TreeSet;
+
+class Solution {
+    public int maxSum(List<Integer> nums, int k) {
+        final long MOD = 1_000_000_007L;
+        long[] cnt = new long[31];
+        for (int x : nums) {
+            for (int i = 0; i < 31; i++) {
+                cnt[i] += (x >> i) & 1;
+            }
+        }
+
+        TreeSet<Long> cuts = new TreeSet<>();
+        cuts.add(0L);
+        cuts.add((long) k);
+        for (int i = 0; i < 31; i++) {
+            cuts.add(Math.min(cnt[i], k));
+        }
+
+        Long[] c = cuts.toArray(new Long[0]);
+        long total = 0;
+        for (int j = 0; j + 1 < c.length; j++) {
+            long lo = c[j];
+            long hi = c[j + 1];
+
+            long val = 0;
+            for (int i = 0; i < 31; i++) {
+                if (cnt[i] > lo) {
+                    val += 1L << i;
+                }
+            }
+
+            total = (total + (hi - lo) % MOD * (val * val % MOD)) % MOD;
+        }
+        return (int) total;
+    }
+}
