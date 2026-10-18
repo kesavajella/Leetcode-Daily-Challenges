@@ -1,0 +1,93 @@
+//1569. Number of Ways to Reorder Array to Get Same BST
+class Solution {
+    int MOD = (int)1e9 + 7;
+    public int numOfWays(int[] nums) {
+        TreeNode root = buildBST(nums);
+        Combinatorics.init();
+        long ans = ways(root)[0]-1;
+        return (int) ans;
+    }
+
+    private long[] ways(TreeNode root) {
+        if(root==null) return new long[]{1, 0};
+
+        long[] left = ways(root.left);
+        long[] right = ways(root.right);
+
+        long sum = left[1] + right[1];
+        long ways = (left[0] * right[0]) %MOD;
+        ways = (ways * Combinatorics.nCk((int)sum, (int)left[1])) % MOD;
+        return new long[] {ways, sum+1};
+    }
+
+    private TreeNode buildBST(int[] nums) {
+        TreeNode root = new TreeNode(nums[0]);
+        for(int i=1 ; i<nums.length ; i++)
+            insert(root, nums[i]);
+        return root;
+    }
+    private void insert(TreeNode root, int val) {
+        TreeNode newNode = new TreeNode(val);
+        TreeNode cur = root;
+        while(cur!=null) {
+            if(val<cur.val) {
+                if(cur.left==null) {
+                    cur.left = newNode;
+                    return;
+                }
+                cur = cur.left;
+            }
+            else {
+                if(cur.right==null) {
+                    cur.right = newNode;
+                    return;
+                }
+                cur = cur.right;
+            }
+        }
+    }
+    class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode(int val) {
+            this.val = val;
+        }
+    }
+}
+class Combinatorics {
+    static final int MAX = 1000;
+    static final int MOD = 1_000_000_007;
+    static long[] fact = new long[MAX + 1];
+    static long[] invFact = new long[MAX + 1];
+
+    static void init() {
+        fact[0] = invFact[0] = 1;
+        for (int i = 1; i <= MAX; i++) {
+            fact[i] = fact[i - 1] * i % MOD;
+        }
+        invFact[MAX] = modInverse(fact[MAX]);
+        for (int i = MAX - 1; i >= 1; i--) {
+            invFact[i] = invFact[i + 1] * (i + 1) % MOD;
+        }
+    }
+
+    static long modInverse(long x) {
+        return power(x, MOD - 2);
+    }
+
+    static long power(long a, long b) {
+        long res = 1;
+        while (b > 0) {
+            if ((b & 1) == 1) res = res * a % MOD;
+            a = a * a % MOD;
+            b >>= 1;
+        }
+        return res;
+    }
+
+    static long nCk(int n, int k) {
+        if (k < 0 || k > n) return 0;
+        return fact[n] * invFact[k] % MOD * invFact[n - k] % MOD;
+    }
+}
